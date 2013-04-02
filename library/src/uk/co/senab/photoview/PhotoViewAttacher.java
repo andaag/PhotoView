@@ -858,27 +858,31 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, Vers
 		}
 
 		public void run() {
-			ImageView imageView = getImageView();
+			try {
+				ImageView imageView = getImageView();
 
-			if (null != imageView) {
-				mSuppMatrix.postScale(mDeltaScale, mDeltaScale, mFocalX, mFocalY);
-				checkAndDisplayMatrix();
-
-				final float currentScale = getScale();
-
-				if ((mDeltaScale > 1f && currentScale < mTargetZoom)
-						|| (mDeltaScale < 1f && mTargetZoom < currentScale)) {
-					// We haven't hit our target scale yet, so post ourselves
-					// again
-					Compat.postOnAnimation(imageView, this);
-
-				} else {
-					// We've scaled past our target zoom, so calculate the
-					// necessary scale so we're back at target zoom
-					final float delta = mTargetZoom / currentScale;
-					mSuppMatrix.postScale(delta, delta, mFocalX, mFocalY);
+				if (null != imageView) {
+					mSuppMatrix.postScale(mDeltaScale, mDeltaScale, mFocalX, mFocalY);
 					checkAndDisplayMatrix();
+
+					final float currentScale = getScale();
+
+					if ((mDeltaScale > 1f && currentScale < mTargetZoom)
+							|| (mDeltaScale < 1f && mTargetZoom < currentScale)) {
+						// We haven't hit our target scale yet, so post ourselves
+						// again
+						Compat.postOnAnimation(imageView, this);
+
+					} else {
+						// We've scaled past our target zoom, so calculate the
+						// necessary scale so we're back at target zoom
+						final float delta = mTargetZoom / currentScale;
+						mSuppMatrix.postScale(delta, delta, mFocalX, mFocalY);
+						checkAndDisplayMatrix();
+					}
 				}
+			} catch (IllegalStateException e) {
+				// ignore, the ImageView is destroyed
 			}
 		}
 	}
