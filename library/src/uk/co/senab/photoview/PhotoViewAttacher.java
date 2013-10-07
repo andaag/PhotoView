@@ -230,6 +230,21 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, Vers
 		return imageView;
 	}
 
+    public final boolean hasImageView() {
+        ImageView imageView = null;
+
+        if (null != mImageView) {
+            imageView = mImageView.get();
+        }
+
+        // If we don't have an ImageView, call cleanup()
+        if (null == imageView) {
+            cleanup();
+        }
+
+        return imageView != null;
+    }
+
 	@Override
 	public float getMinScale() {
 		return mMinScale;
@@ -858,6 +873,9 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, Vers
 		}
 
 		public void run() {
+            if (!hasImageView()) {
+                return;
+            }
 			ImageView imageView = getImageView();
 
 			if (null != imageView) {
@@ -900,6 +918,10 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, Vers
 		}
 
 		public void fling(int viewWidth, int viewHeight, int velocityX, int velocityY) {
+            if (!hasImageView()) {
+                return;
+            }
+
 			final RectF rect = getDisplayRect();
 			if (null == rect) {
 				return;
@@ -938,6 +960,9 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, Vers
 
 		@Override
 		public void run() {
+            if (!hasImageView()) {
+                return;
+            }
 			if (mScroller.isFinished()) {
 				return; // remaining post that should not be handled
 			}
